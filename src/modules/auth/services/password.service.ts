@@ -70,8 +70,10 @@ export class PasswordService {
 
 
     public async sendOTP(userId: number, slug: string) {
+        console.log("🚀 ~ PasswordService ~ sendOTP ~ slug:", slug)
         try {
             const otp = await this.generateOTP()
+            console.log("🚀 ~ PasswordService ~ sendOTP ~ otp:", otp)
             const user = await this.prisma.user.findFirst({
                 where: {
                     id: userId
@@ -93,7 +95,7 @@ export class PasswordService {
 
             let message;
             if (slug === 'forgot_password') {
-                message = forgotPasswordEmailTemplate.replace("{{otp}}", otp)
+                message = await forgotPasswordEmailTemplate.replace("{{otp}}", otp)
                 this.emailService.sendMail(user.email, message)
             } else if (slug === 'profile_verification') {
                 message = ProfileVerificationEmailTemplate.replace("{{otp}}", otp)

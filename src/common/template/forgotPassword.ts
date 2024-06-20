@@ -25,7 +25,7 @@ export const forgotPasswordEmailTemplate = `
                                 We received a request to reset your password. Please use the following OTP to reset your password:
                             </p>
                             <p style="text-align: center; margin: 20px 0;">
-                                <span style="display: inline-block; background-color: #007bff; color: #ffffff; padding: 10px 20px; font-size: 24px; border-radius: 5px; letter-spacing: 2px;"{{otp}}</span>
+                                <span style="display: inline-block; background-color: #007bff; color: #ffffff; padding: 10px 20px; font-size: 24px; border-radius: 5px; letter-spacing: 2px;">{{otp}}</span>
                             </p>
                             <p style="color: #333333; font-size: 16px; line-height: 1.5; margin: 0;">
                                 If you did not request a password reset, please ignore this email or contact support if you have questions.

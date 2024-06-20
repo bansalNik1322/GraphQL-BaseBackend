@@ -1,18 +1,18 @@
 import { Field, Int, ObjectType, InputType } from '@nestjs/graphql';
-import { IsAlphanumeric, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MinLength } from 'class-validator';
+import { IsAlphanumeric, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength, MinLength } from 'class-validator';
 import { IUser } from 'src/common/Interfaces/User';
 import { AtleastOne } from 'src/common/decorators/customValidation';
 
 
 @ObjectType({ isAbstract: true })
 export class BaseResponse {
-    @Field()
+    @Field({ nullable: true })
     status: boolean;
 
-    @Field()
+    @Field({ nullable: true })
     code: string;
 
-    @Field()
+    @Field({ nullable: true })
     message: string;
 }
 
@@ -245,13 +245,13 @@ export class ForgotPasswordInput {
 @InputType()
 export class ChangePasswordInput {
     @IsNotEmpty()
-    @Field()
+    @Field({ nullable: true })
     @IsString()
     oldPassword: string;
 
     @IsNotEmpty()
     @IsString()
-    @Field()
+    @Field({ nullable: true })
     @MinLength(8)
     newPassword: string;
 }
@@ -259,13 +259,36 @@ export class ChangePasswordInput {
 @InputType()
 export class VerifyUserInput {
     @IsNotEmpty()
-    @Field()
+    @Field({ nullable: true })
     @IsString()
     @IsEmail()
     email: string;
     @IsString()
-    @Field()
+    @Field({ nullable: true })
     @IsNotEmpty()
     otp: string;
+
+}
+
+@InputType()
+export class ResetPasswordInput {
+    @Field({ nullable: true })
+    @IsNotEmpty()
+    @IsString()
+    @MaxLength(8)
+    password: string;
+}
+
+
+@InputType()
+export class ResendVerificationEmailInput {
+    @Field({ nullable: true })
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+    @IsNotEmpty()
+    @IsString()
+    @Field({ nullable: true })
+    slug: string;
 
 }

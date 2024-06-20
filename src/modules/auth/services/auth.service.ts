@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { ChangePasswordInput, CreateUserInput, ForgotPasswordInput, LoginUserInput, UpdateUserInput, VerifyUserInput } from "src/graphql/AuthModel";
+import { ChangePasswordInput, CreateUserInput, ForgotPasswordInput, LoginUserInput, ResendVerificationEmailInput, UpdateUserInput, VerifyUserInput } from "src/graphql/AuthModel";
 import { PrismaService } from "src/providers/prisma/prisma.server";
 import { PasswordService } from "./password.service";
 import { IJWTPayload } from "src/common/Interfaces/common";
 import { userSelectionFields } from "src/common/utils/selectionField";
+import { differenceInMinutes } from "date-fns";
 
 @Injectable()
 export class AuthService {
@@ -239,21 +240,72 @@ export class AuthService {
         }
     }
 
-    async resetPassword(email: string, token: string, newPassword: string): Promise<boolean> {
-        // Example implementation
-        // Validate token and update user's password
-        return true;
+    async resetPassword(password: string, userId: number): Promise<unknown> {
+        try {
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    id: userId
+                },
+                select: {
+                    ...userSelectionFields
+                }
+            })
+            if (!user) {
+                throw new HttpException("Invalid UserID", HttpStatus.BAD_REQUEST)
+            }
+
+
+            const hashedPassword = await this.passwordService.encryptPassword(password)
+            await this.prisma.user.update({
+                where: {
+                    id: userId
+                }, data: {
+                    password: password
+                }
+            })
+
+            return {
+                status: true,
+                code: HttpStatus.OK,
+                message: "OTP Sent!",
+                ...user
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async resendVerificationEmail(payload: ResendVerificationEmailInput): Promise<unknown> {
+        try {
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    email: payload.email
+                },
+                select: {
+                    ...userSelectionFields
+                }
+            })
+            if (!user) {
+                throw new HttpException("Email Not Found!", HttpStatus.BAD_REQUEST)
+            }
+
+            await this.passwordService.sendOTP(user.id, payload.slug)
+
+            return {
+                status: true,
+                code: HttpStatus.OK,
+                message: "OTP Sent!",
+                ...user
+            }
+
+        } catch (error) {
+            throw error
+        }
     }
 
     async verifyEmail(email: string, token: string): Promise<boolean> {
         // Example implementation
         // Verify email using verification token
-        return true;
-    }
-
-    async resendVerificationEmail(email: string): Promise<boolean> {
-        // Example implementation
-        // Resend email verification link
         return true;
     }
 
@@ -274,28 +326,32 @@ export class AuthService {
         try {
             const user = await this.prisma.user.findFirst({
                 where: {
-                    email: payload.email
+                    email: payload?.email
                 },
                 select: {
-                    ...userSelectionFields, otp: true
+                    ...userSelectionFields, otp: true,
+                    lastOtpSentAt: true
                 }
             })
-
             if (!user) throw new HttpException('Invalid Email', HttpStatus.BAD_REQUEST)
 
-            // Verify OTP
-            if (payload.otp === user.otp) {
-                await this.prisma.user.update({
-                    where: {
-                        email: payload.email
-                    },
-                    data: {
-                        isEmailVerified: true,
-                        otpAttempts: 0,
-                        otp: null
-                    }
-                })
-            }
+            if (payload?.otp !== user?.otp) throw new HttpException('Incorrect OTP', HttpStatus.BAD_REQUEST)
+
+            const diffInMinutes = differenceInMinutes(new Date(), user?.lastOtpSentAt);
+
+            if (diffInMinutes > 10) throw new HttpException('OTP Expired! Please Try Again.', HttpStatus.BAD_REQUEST)
+
+
+            await this.prisma.user.update({
+                where: {
+                    email: payload.email
+                },
+                data: {
+                    isEmailVerified: true,
+                    otpAttempts: 0,
+                    otp: null
+                }
+            })
 
             return {
                 status: true,
@@ -303,11 +359,8 @@ export class AuthService {
                 message: "OTP Verified!",
                 ...user
             }
-
-
-            return true;
         } catch (error) {
-
+            throw error
         }
     }
 }

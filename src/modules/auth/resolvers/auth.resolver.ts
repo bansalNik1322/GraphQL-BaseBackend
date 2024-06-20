@@ -1,11 +1,12 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { ChangePasswordInput, CreateUserInput, ForgotPasswordInput, LoginUserInput, UpdateUserInput, User, VerifyUserInput } from 'src/graphql/AuthModel'; // Adjust the path as per your project structure
+import { ChangePasswordInput, CreateUserInput, ForgotPasswordInput, LoginUserInput, ResendVerificationEmailInput, UpdateUserInput, User, VerifyUserInput } from 'src/graphql/AuthModel'; // Adjust the path as per your project structure
 import { AuthService } from '../services/auth.service';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from 'src/common/Guards/auth.guard';
 
 
 @Resolver()
+// @UsePipes(new ValidationPipe())
 export class AuthResolver {
     constructor(private authService: AuthService) { }
 
@@ -71,20 +72,24 @@ export class AuthResolver {
         return await this.authService.verifyOTP(verifyUserInput)
     }
 
-    // @Mutation(() => Boolean, { name: 'resetPassword' })
-    // async resetPassword(@Args('email') email: string, @Args('token') token: string, @Args('newPassword') newPassword: string): Promise<boolean> {
-    //     return await this.authService.resetPassword(email, token, newPassword);
-    // }
+    @Mutation(() => User, { name: 'ResetPassword' })
+    @UseGuards(AuthGuard)
+    async resetPassword(@Args('password') password: string, @Context() context: any): Promise<unknown> {
+        const userId = await context.req.userData.userId
+        return await this.authService.resetPassword(password, userId);
+    }
+
+    @Mutation(() => User, { name: 'ResendVerificationEmail' })
+    @UsePipes(new ValidationPipe())
+    async resendVerificationEmail(@Args('resendVerificationEmailInput') resendVerificationEmailInput: ResendVerificationEmailInput): Promise<unknown> {
+        return await this.authService.resendVerificationEmail(resendVerificationEmailInput);
+    }
 
     // @Mutation(() => Boolean, { name: 'verifyEmail' })
     // async verifyEmail(@Args('email') email: string, @Args('token') token: string): Promise<boolean> {
     //     return await this.authService.verifyEmail(email, token);
     // }
 
-    // @Mutation(() => Boolean, { name: 'resendVerificationEmail' })
-    // async resendVerificationEmail(@Args('email') email: string): Promise<boolean> {
-    //     return await this.authService.resendVerificationEmail(email);
-    // }
 
 
     // @Mutation(() => Boolean, { name: 'updateEmailPreferences' })

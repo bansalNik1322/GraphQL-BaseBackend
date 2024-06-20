@@ -3,9 +3,9 @@
 # ------------------------------------------------------
 
 type User {
-  status: Boolean!
-  code: String!
-  message: String!
+  status: Boolean
+  code: String
+  message: String
   id: Int
   username: String
   email: String
@@ -43,6 +43,8 @@ type Mutation {
   ChangePassword(changePasswordInput: ChangePasswordInput!): User!
   ForgotPassword(forgotPasswordInput: ForgotPasswordInput!): User!
   VerifyUser(verifyUserInput: VerifyUserInput!): User!
+  ResetPassword(password: String!): User!
+  ResendVerificationEmail(resendVerificationEmailInput: ResendVerificationEmailInput!): User!
 }
 
 input CreateUserInput {
@@ -81,8 +83,8 @@ input UpdateUserInput {
 }
 
 input ChangePasswordInput {
-  oldPassword: String!
-  newPassword: String!
+  oldPassword: String
+  newPassword: String
 }
 
 input ForgotPasswordInput {
@@ -91,6 +93,11 @@ input ForgotPasswordInput {
 }
 
 input VerifyUserInput {
-  email: String!
-  otp: String!
+  email: String
+  otp: String
+}
+
+input ResendVerificationEmailInput {
+  email: String
+  slug: String
 }
