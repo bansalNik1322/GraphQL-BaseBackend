@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:123456@localhost:3306/airtasker"
+}
+
+
+
+model User {
+  id                 Int      @id @default(autoincrement())
+  username           String   @unique
+  email              String   @unique
+  password           String
+  name               String
+  dateOfBirth        DateTime?
+  phoneNumber        String?  @unique
+  isPhoneVerified    Boolean  @default(false)
+  isEmailVerified    Boolean  @default(false)
+  verificationToken  String?  // Token for email or phone verification
+  profilePictureUrl  String?  // URL to the user's profile picture
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  lastLogin          DateTime?
+  isActive           Boolean  @default(true)
+  address            String?  // Optional field for user's address
+  city               String?  // Optional field for user's city
+  state              String?  // Optional field for user's state
+  country            String?  // Optional field for user's country
+  zipCode            String?  // Optional field for user's zip code
+  socialProvider     String?  // e.g., 'google', 'facebook', etc.
+  socialProviderId   String?  // The ID given by the social provider
+  status   Boolean?  @default(true) // The ID given by the social provider
+  otp                String?  // Store OTP here
+  lastOtpSentAt      DateTime? // Store last OTP sent timestamp here
+  otpAttempts        Int?     // Store OTP attempts here
+}

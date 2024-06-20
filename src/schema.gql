@@ -1,0 +1,96 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  status: Boolean!
+  code: String!
+  message: String!
+  id: Int
+  username: String
+  email: String
+  name: String
+  dateOfBirth: DateTime
+  phoneNumber: String
+  isPhoneVerified: Boolean
+  isEmailVerified: Boolean
+  verificationToken: String
+  profilePictureUrl: String
+  lastLogin: DateTime
+  isActive: Boolean
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+  accessToken: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  GetAllUsers: [User!]!
+}
+
+type Mutation {
+  CreateUser(createUserInput: CreateUserInput!): User!
+  LoginUser(loginUserInput: LoginUserInput!): User!
+  UpdateUser(updateUserInput: UpdateUserInput!): User!
+  DeleteAccount: User!
+  ChangePassword(changePasswordInput: ChangePasswordInput!): User!
+  ForgotPassword(forgotPasswordInput: ForgotPasswordInput!): User!
+  VerifyUser(verifyUserInput: VerifyUserInput!): User!
+}
+
+input CreateUserInput {
+  username: String
+  email: String
+  password: String
+  name: String
+  dateOfBirth: DateTime
+  phoneNumber: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+}
+
+input LoginUserInput {
+  password: String
+  email: String
+  username: String
+}
+
+input UpdateUserInput {
+  username: String
+  email: String
+  password: String
+  name: String
+  dateOfBirth: DateTime
+  phoneNumber: String
+  profilePictureUrl: String
+  address: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+}
+
+input ChangePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+}
+
+input ForgotPasswordInput {
+  email: String
+  username: String
+}
+
+input VerifyUserInput {
+  email: String!
+  otp: String!
+}
