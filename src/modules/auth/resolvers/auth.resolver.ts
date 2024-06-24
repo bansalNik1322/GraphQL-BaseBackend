@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { ChangePasswordInput, CreateUserInput, ForgotPasswordInput, LoginUserInput, ResendVerificationEmailInput, UpdateUserInput, User, VerifyUserInput } from 'src/graphql/AuthModel'; // Adjust the path as per your project structure
+import { ChangePasswordInput, CreateUserInput, ForgotPasswordInput, HeaderInput, LoginUserInput, ResendVerificationEmailInput, UpdateUserInput, User, VerifyUserInput } from 'src/graphql/AuthModel'; // Adjust the path as per your project structure
 import { AuthService } from '../services/auth.service';
-import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { HttpException, HttpStatus, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from 'src/common/Guards/auth.guard';
 
 

@@ -13,8 +13,6 @@ datasource db {
   url      = "mysql://root:123456@localhost:3306/airtasker"
 }
 
-
-
 model User {
   id                 Int      @id @default(autoincrement())
   username           String   @unique
@@ -42,4 +40,77 @@ model User {
   otp                String?  // Store OTP here
   lastOtpSentAt      DateTime? // Store last OTP sent timestamp here
   otpAttempts        Int?     // Store OTP attempts here
+
+
+  userRoles UserRole[]
+}
+
+
+
+model Role {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+
+  userRoles   UserRole[]
+}
+
+model UserRole {
+  userId Int
+  roleId Int
+
+  user User? @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  role Role? @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([userId, roleId])
+}
+
+
+model Course {
+  courseId            Int       @id @default(autoincrement())
+  courseImage         String?
+  courseName          String
+  courseCategory      String
+  courseSubCategory   String?
+  avgRating           Float?
+  totalEnrolled       Int       @default(0)
+  isDraft             Boolean   @default(false)
+  registrationDate    DateTime  @default(now())
+  status              Boolean   @default(true)
+  description         String?
+  instructorId        Int?
+
+  instructor          Instructor? @relation(fields: [instructorId], references: [id])
+}
+
+model Instructor{
+  id                 Int      @id @default(autoincrement())
+  email              String   @unique
+  password           String
+  name               String
+  dateOfBirth        DateTime?
+  phoneNumber        String?  @unique
+  isPhoneVerified    Boolean  @default(false)
+  isEmailVerified    Boolean  @default(false)
+  verificationToken  String?  
+  profilePictureUrl  String?  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  lastLogin          DateTime?
+  isActive           Boolean  @default(true)
+  address            String?  
+  city               String?  
+  state              String?  
+  country            String?  
+  zipCode            String?  
+  socialProvider     String?  
+  socialProviderId   String?  
+  status   Boolean?  @default(true)
+  otp                String?  
+  lastOtpSentAt      DateTime?
+  otpAttempts        Int?     
+
+
+  courses            Course[]
+
 }

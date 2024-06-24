@@ -1,31 +1,10 @@
-import { Field, Int, ObjectType, InputType } from '@nestjs/graphql';
-import { Role } from '@prisma/client';
-import { IsAlphanumeric, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength, MinLength } from 'class-validator';
-import { IUser } from 'src/common/Interfaces/User';
-import { AtleastOne } from 'src/common/decorators/customValidation';
-import { RoleEnum } from 'src/common/utils/enum';
-import { nullable } from 'zod';
-
-
-@ObjectType({ isAbstract: true })
-export class BaseResponse {
-    @Field({ nullable: true })
-    status: boolean;
-
-    @Field({ nullable: true })
-    code: string;
-
-    @Field({ nullable: true })
-    message: string;
-}
+import { Field, InputType, Int, ObjectType } from "@nestjs/graphql";
+import { IsAlphanumeric, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MinLength } from "class-validator";
 
 @ObjectType()
-export class User extends BaseResponse {
+export class Instructor {
     @Field(() => Int, { nullable: true })
     readonly id?: number;
-
-    @Field({ nullable: true })
-    readonly username?: string;
 
     @Field({ nullable: true })
     readonly email?: string;
@@ -76,14 +55,8 @@ export class User extends BaseResponse {
     readonly accessToken?: string
 }
 
-
 @InputType()
-export class CreateUserInput implements Partial<IUser> {
-    @Field({ nullable: true })
-    @IsNotEmpty()
-    @IsAlphanumeric()
-    @IsString()
-    username: string;
+export class CreateInstructorInput {
 
     @Field({ nullable: true })
     @IsNotEmpty()
@@ -137,13 +110,9 @@ export class CreateUserInput implements Partial<IUser> {
     zipCode?: string;
 }
 
+
 @InputType()
-export class UpdateUserInput implements Partial<IUser> {
-    @Field({ nullable: true })
-    @IsAlphanumeric()
-    @IsOptional()
-    @IsString()
-    username?: string;
+export class UpdateInstructorInput {
 
     @Field({ nullable: true })
     @IsOptional()
@@ -200,107 +169,4 @@ export class UpdateUserInput implements Partial<IUser> {
     @IsString()
     @IsOptional()
     zipCode?: string;
-}
-
-@InputType()
-export class LoginUserInput implements Partial<User> {
-    @Field({ nullable: true })
-    @IsNotEmpty()
-    password: string;
-
-    @Field({ nullable: true })
-    @IsOptional()
-    @IsString()
-    email?: string;
-
-    @Field({ nullable: true })
-    @IsString()
-    @IsOptional()
-    username?: string;
-
-
-    @AtleastOne(['email', 'username'], {
-        message: 'Either email or username must be provided',
-    })
-    validateEmailOrUsername: string;
-}
-
-@InputType()
-export class ForgotPasswordInput {
-    @Field({ nullable: true })
-    @IsOptional()
-    @IsString()
-    email?: string;
-
-    @Field({ nullable: true })
-    @IsString()
-    @IsOptional()
-    username?: string;
-
-
-    @AtleastOne(['email', 'username'], {
-        message: 'Either email or username must be provided',
-    })
-    validateEmailOrUsername: string;
-}
-
-
-@InputType()
-export class ChangePasswordInput {
-    @IsNotEmpty()
-    @Field({ nullable: true })
-    @IsString()
-    oldPassword: string;
-
-    @IsNotEmpty()
-    @IsString()
-    @Field({ nullable: true })
-    @MinLength(8)
-    newPassword: string;
-}
-
-@InputType()
-export class VerifyUserInput {
-    @IsNotEmpty()
-    @Field({ nullable: true })
-    @IsString()
-    @IsEmail()
-    email: string;
-    @IsString()
-    @Field({ nullable: true })
-    @IsNotEmpty()
-    otp: string;
-
-}
-
-@InputType()
-export class ResetPasswordInput {
-    @Field({ nullable: true })
-    @IsNotEmpty()
-    @IsString()
-    @MaxLength(8)
-    password: string;
-}
-
-
-@InputType()
-export class ResendVerificationEmailInput {
-    @Field({ nullable: true })
-    @IsNotEmpty()
-    @IsEmail()
-    email: string;
-    @IsNotEmpty()
-    @IsString()
-    @Field({ nullable: true })
-    slug: string;
-
-}
-
-
-@InputType()
-export class HeaderInput {
-    @Field({ nullable: true })
-    @IsNotEmpty()
-    @IsEnum(RoleEnum)
-    role: RoleEnum
 }

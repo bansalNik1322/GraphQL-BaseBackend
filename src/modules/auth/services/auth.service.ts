@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { ChangePasswordInput, CreateUserInput, ForgotPasswordInput, LoginUserInput, ResendVerificationEmailInput, UpdateUserInput, VerifyUserInput } from "src/graphql/AuthModel";
+import { ChangePasswordInput, CreateUserInput, ForgotPasswordInput, HeaderInput, LoginUserInput, ResendVerificationEmailInput, UpdateUserInput, VerifyUserInput } from "src/graphql/AuthModel";
 import { PrismaService } from "src/providers/prisma/prisma.server";
 import { PasswordService } from "./password.service";
 import { IJWTPayload } from "src/common/Interfaces/common";
 import { userSelectionFields } from "src/common/utils/selectionField";
 import { differenceInMinutes } from "date-fns";
+import { RoleEnum } from "src/common/utils/enum";
 
 @Injectable()
 export class AuthService {
